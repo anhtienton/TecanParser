@@ -2,7 +2,7 @@
 setwd("/Users/tien/Documents/Tecan_parser")
 library(gdata)
 
-rawData <- (read.xls("2x_data.xlsx", sheet=1, header=TRUE))
+rawData <- (read.xls("2x_data.xlsx", sheet=1, header=TRUE, fileEncoding="latin1"))
 
 test.df <- data.frame(matrix(nrow=8,ncol=12))
 
@@ -10,9 +10,14 @@ test.df <- data.frame(matrix(nrow=8,ncol=12))
 
 df.column = 1
 df.row = 1
+
 for (rows in 1:length(rawData[,1])){
   for (columns in 1:length(rawData[1,])){
-
+    
+    
+    if (is.na(rawData[rows,columns]) == TRUE || nchar(trimws(rawData[rows,columns])) == 0)
+      next()
+    
     if (is.numeric(rawData[rows,columns]) == TRUE){
       test.df[df.row,df.column] <- rawData[rows,columns]
       message("Added to df")
@@ -28,6 +33,7 @@ for (rows in 1:length(rawData[,1])){
       }
     }
     else{
+      
       out <- tryCatch( 
         {
         current_parser <- as.numeric(as.character(droplevels(rawData[rows,columns])))
@@ -38,7 +44,6 @@ for (rows in 1:length(rawData[,1])){
         },
         error=function(cond){
           message("Error here")
-          #force(next(NULL))
         }
       )
       # return(out)
@@ -59,5 +64,13 @@ for (rows in 1:length(rawData[,1])){
     }
   }
 }
-
-test <- strsplit(as.character(droplevels(rawData[9,1])),"/")
+columnNames <- 1:12
+rowNames <- list()
+hours <- length(test.df[,1])/8
+for(i in 1:hours){
+  for(j in 1:8){
+    temp <- paste(c(i,".",j),collapse="")
+    rowNames <- c(rowNames,temp)
+  }
+}
+write.table(test.df,file="allData.csv",col.names= columnNames,row.names = rowNames,sep=",")
