@@ -2,7 +2,7 @@
 setwd("/Users/tien/Documents/Tecan_parser")
 library(gdata)
 
-rawData <- (read.xls("2x_data.xlsx", sheet=1, header=TRUE, fileEncoding="latin1"))
+rawData <- (read.xls("TEM1_mutants_growth_07022018.xlsx", sheet=1, header=TRUE, fileEncoding="latin1"))
 
 test.df <- data.frame(matrix(nrow=8,ncol=12))
 
@@ -19,6 +19,8 @@ for (rows in 1:length(rawData[,1])){
       next()
     
     if (is.numeric(rawData[rows,columns]) == TRUE){
+      if (rawData[rows,columns] > 3)
+        next()
       test.df[df.row,df.column] <- rawData[rows,columns]
       message("Added to df")
       df.column = df.column+1
@@ -47,7 +49,7 @@ for (rows in 1:length(rawData[,1])){
         }
       )
       # return(out)
-      if (is.null(out))
+      if (is.null(out) || out > 3)
         next
       test.df[df.row,df.column] <- out
       message("Added to df")
