@@ -34,33 +34,30 @@ for (rows in 1:length(rawData[,1])){
         },
         warning=function(cond){
           message("Warning here")
-          break()
+          next()
         },
         error=function(cond){
           message("Error here")
-          break()
-        },
-        finally = {
-          test.df[df.row,df.column] <- current_parser
-          message("Added to df")
-          df.column = df.column+1
-          if (df.column == 13){
-            df.row = df.row+1
-            df.column = 1
-          }
-          if (df.row == 9 && df.column==13){
-            df.row=1
-            df.column=1
-            next()
-          }
+          #force(next(NULL))
         }
       )
+      # return(out)
+      if (is.null(out))
+        next
+      test.df[df.row,df.column] <- out
+      message("Added to df")
+      df.column = df.column+1
+      if (df.column == 13){
+        df.row = df.row+1
+        df.column = 1
+      }
+      if (df.row == 9 && df.column==13){
+        df.row=1
+        df.column=1
+        next()
+      }
     }
-    
   }
 }
 
-for (columns in 1:length(rawData[1,])){
-  for (rows in 1:length(rawData[,1])){
-  }
-}
+test <- strsplit(as.character(droplevels(rawData[9,1])),"/")
